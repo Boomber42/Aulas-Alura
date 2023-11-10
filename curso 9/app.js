@@ -1,5 +1,7 @@
 var listOfDrawnNumbers = [];
 var maxValue = 10;
+var minValue = 1;
+document.getElementById('chute').removeAttribute('disabled');
 
 function generateRandomNumber(){
     var chosenNumber = parseInt(Math.random() * maxValue +1);
@@ -26,8 +28,9 @@ function displayTextOnScreen(tag, text){
 }
 
 function displayInitialMessage(){
+    var initialText = `Escolha um número entre ${minValue} a ${maxValue}.`;
     displayTextOnScreen('h1', 'Jogo do número secreto');
-    displayTextOnScreen('p', 'Escolha um número entre 1 a 10.');
+    displayTextOnScreen('p', initialText);
 }
 
 displayInitialMessage();
@@ -47,8 +50,9 @@ function checkGuess(){
         displayTextOnScreen('h1', 'Acertou!');
         displayTextOnScreen('p', attemptsMessage);
         document.getElementById('reiniciar').removeAttribute('disabled');
+        document.getElementById('chute').setAttribute('disabled', true);
 
-    } else {
+    } else{
         if(guess > secretNumber){
             displayTextOnScreen('p', 'O número secreto é menor.');
         } else{
@@ -58,6 +62,14 @@ function checkGuess(){
         attempts++
         clearField();
     }
+
+    if(guess > maxValue){
+        var errorMessage = `O número que você escolheu: ${guess}, é maior que ${maxValue}, tente novamente com um número entre ${minValue} e ${maxValue}.`;
+        displayTextOnScreen('p', errorMessage);
+    } else if(guess < minValue){
+        var errorMessage = `O número que você escolheu: ${guess}, é menor que ${minValue}, tente novamente com um número entre ${minValue} e ${maxValue}.`;
+        displayTextOnScreen('p', errorMessage);
+    }
 }
 
 function restartGame(){
@@ -65,5 +77,6 @@ function restartGame(){
     attempts = 1;
     clearField();
     displayInitialMessage();
+    document.getElementById('chute').removeAttribute('disabled');
     document.getElementById('reiniciar').setAttribute('disabled', true);
 }
