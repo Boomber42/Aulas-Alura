@@ -24,7 +24,7 @@ var attempts = 1;
 function displayTextOnScreen(tag, text){
     var field = document.querySelector(tag);
     field.innerHTML = text;
-    responsiveVoice.speak(text, 'Brazilian Portuguese Male', {rate:1.2});
+    responsiveVoice.speak(text, 'Brazilian Portuguese Male', {rate:1});
 }
 
 function displayInitialMessage(){
