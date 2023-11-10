@@ -45,7 +45,7 @@ function checkGuess(){
     
     if(guess == secretNumber){
         var wordAttempts = attempts > 1 ? 'tentativas' : 'tentativa';
-        var attemptsMessage = `Parabéns, você descobriu o número secreto com ${attempts} ${wordAttempts}.`
+        var attemptsMessage = `Parabéns, você descobriu o número secreto com ${attempts} ${wordAttempts}. Para iniciar um novo jogo, basta clicar no botão "Novo jogo".`
         responsiveVoice.speak(attemptsMessage, 'Brazilian Portuguese Male', {rate:1.2});
         displayTextOnScreen('h1', 'Acertou!');
         displayTextOnScreen('p', attemptsMessage);
