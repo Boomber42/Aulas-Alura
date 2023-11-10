@@ -1,7 +1,6 @@
 var listOfDrawnNumbers = [];
 var maxValue = 10;
 var minValue = 1;
-var initialText = `Escolha um número entre ${minValue} a ${maxValue}.`;
 document.getElementById('chute').removeAttribute('disabled');
 
 function generateRandomNumber(){
@@ -29,6 +28,7 @@ function displayTextOnScreen(tag, text){
 }
 
 function displayInitialMessage(){
+    var initialText = `Escolha um número entre ${minValue} a ${maxValue}.`;
     displayTextOnScreen('h1', 'Jogo do número secreto');
     displayTextOnScreen('p', initialText);
 }
@@ -76,8 +76,7 @@ function restartGame(){
     secretNumber = generateRandomNumber();
     attempts = 1;
     clearField();
-    displayTextOnScreen('h1', 'Bem vindo(a) de volta!');
-    displayTextOnScreen('p', initialText);
+    displayInitialMessage();
     document.getElementById('chute').removeAttribute('disabled');
     document.getElementById('reiniciar').setAttribute('disabled', true);
 }
