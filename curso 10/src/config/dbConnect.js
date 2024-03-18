@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
-mongoose.connect("mongodb+srv://boomber42:123@node-express.lhqvbds.mongodb.net/alura-node");
 
-var db = mongoose.connection;
+async function connectInDatabase(){
+  mongoose.connect(process.env.DB_CONNECTION_STRING);
+  return mongoose.connection;
+}
 
-export default db;
+export default connectInDatabase;

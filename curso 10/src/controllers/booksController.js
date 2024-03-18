@@ -1,86 +1,74 @@
 import books from "../models/Book.js";
-import authors from "../models/Author.js";
+import { authors } from "../models/Author.js";
 
 class BookController{
 
-    static listBooks = (req, res) => {
-        books.find()
-            .populate({
-                path: 'author', 
-                model: authors
-            })
-            .exec()
-            .then(books =>{
-                res.status(200).json(books)
-            })
-            .catch(err =>{
-                console.error(err)
-            })
+  static async listBooks (req, res, next) {
+    try {
+      var listBooks = await books.find({}).populate({ path: "author", model: authors}).exec();
+      res.status(200).json(listBooks);
     }
-
-    static listBookById = (req, res) => {
-        var id = req.params.id;
-
-        books.findById(id)
-            .exec()
-            .then(book =>{
-                res.status(200).json(book)
-            })
-            .catch(err =>{
-                res.status(400).send({message: `${err.message} - Id do livro não encontrado.`})
-            })
+    catch(err){
+      next(err);
     }
+  }
 
-    static registerBook = (req, res) => {
-        var book = new books(req.body);
-
-        book.save()
-            .then(book =>{
-                res.status(201).send(book.toJSON())
-            })
-            .catch(err =>{
-                res.status(500).send({message: `${err.message} - falha ao cadastrar o livro.`})
-            })
+  static async listBookById (req, res, next) {
+    try {
+      var id = req.params.id;
+      var bookFound = await books.findById(id).populate({path: "author", model: authors}).exec();
+      res.status(200).json(bookFound);
     }
-
-    static updateBook = (req, res) => {
-        var id = req.params.id;
-
-        books.findByIdAndUpdate(id, {$set: req.body})
-            .exec()
-            .then(book =>{
-                res.status(200).send({message: 'Livro atualizado com sucesso!'})
-            })
-            .catch(err =>{
-                res.status(500).send({message: err.message})
-            })
+    catch(err){
+      next(err);
     }
+  }
 
-    static deleteBook = (req, res) => {
-        var id = req.params.id;
-
-        books.findByIdAndDelete(id)
-        .exec()
-        .then(book =>{
-            res.status(200).send({message: 'Livro removido com sucesso!'})
-        })
-        .catch(err =>{
-            res.status(500).send({message: err.message})
-        })
+  static async registerBook (req, res, next) {
+    var newBook = req.body;
+    try {
+      var authorFound = await authors.findById(newBook.author);
+      var completeBook = { ...newBook, author: { ...authorFound._doc}};
+      var bookCreated = await books.create(completeBook);
+      res.status(201).json({ message: "Cadastrado com sucesso", books: bookCreated});
     }
-
-    static listBookByPublisher = (req, res) =>{
-        var publisher = req.query.publisher
-
-        books.find({'publisher': publisher})
-        .exec()
-        .then(book =>{
-            res.status(200).send(book)
-        })
-        .catch(err =>{
-            res.status(500).send({message: err.message})
-        })
+    catch(err){
+      next(err);
     }
+  }
+
+  static async updateBook (req, res, next) {
+    try {
+      var id = req.params.id;
+      await books.findByIdAndUpdate(id, {$set: req.body});
+      res.status(200).json({message: "Livro atualizado com sucesso!"});
+    }
+    catch(err) {
+      next(err);
+    }
+  }
+
+  static async deleteBook (req, res, next) {
+    try {
+      var id = req.params.id;
+      await books.findByIdAndDelete(id);
+      res.status(200).json({message: "Livro removido com sucesso!"});
+    }
+    catch(err){
+      next(err);
+    }
+  }
+
+  static async listBookByPublisher (req, res, next) {
+    var publisher = req.query.publisher;
+    try {
+      var booksByPublisher = await books.find({"publisher": publisher});
+      res.status(200).json(booksByPublisher);
+    }
+    catch(err){
+      next(err);
+    }
+  }
 }
 
-export default BookController
+export default BookController;

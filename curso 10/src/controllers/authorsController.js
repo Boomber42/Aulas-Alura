@@ -1,65 +1,64 @@
-import authors from "../models/Author.js";
+import { authors } from "../models/Author.js";
 
 class AuthorController{
 
-    static listAuthors = (req, res) => {
-        authors.find()
-            .exec()
-            .then(authors =>{
-                res.status(200).json(authors)
-            })
-            .catch(err =>{
-                console.error(err)
-            })
+  static async listAuthors (req, res, next) {
+    try {
+      var listAuthors = await authors.find({});
+      res.status(200).json(listAuthors);
     }
-
-    static listAuthorById = (req, res) => {
-        var id = req.params.id;
-
-        authors.findById(id)
-            .then(authors =>{
-                res.status(200).send(authors);
-            })
-            .catch(err =>{
-                res.status(400).send({message: `${err.message} - Id do autor não encontrado.`})
-            })
+    catch(err) {
+      next(err);
     }
+  }
 
-    static registerAuthor = (req, res) => {
-        var author = new authors(req.body);
+  static async listAuthorById (req, res, next) {
+    try {
+      var id = req.params.id;
+      var authorFound = await authors.findById(id);
 
-        author.save()
-            .then(authors =>{
-                res.status(201).send(author.toJSON())
-            })
-            .catch(err =>{
-                res.status(500).send({message: `${err.message} - falha ao cadastrar o autor.`})
-            })
+      if(authorFound !== null){
+        res.status(200).json(authorFound);
+      } else {
+        res.status(404).send({message: "Id do autor não encontrado."});
+      }
     }
-
-    static updateAuthor = (req, res) => {
-        var id = req.params.id;
-
-        authors.findByIdAndUpdate(id, {$set: req.body})
-            .then(authors =>{
-                res.status(200).send({message: 'Autor atualizado com sucesso!'})
-            })
-            .catch(err =>{
-                res.status(500).send({message: err.message})
-            })
+    catch(err) {
+      next(err);
     }
+  }
 
-    static deleteAuthor = (req, res) => {
-        var id = req.params.id;
-
-        authors.findByIdAndDelete(id)
-            .then(authors =>{
-                res.status(200).send({message: 'Autor removido com sucesso!'})
-            })
-            .catch(err =>{
-                res.status(500).send({message: err.message})
-            })
+  static async registerAuthor (req, res, next) {
+    try {
+      var newAuthor = await authors.create(req.body);
+      res.status(201).json({ message: "criado com sucesso", book: newAuthor });
     }
+    catch(err){
+      next(err);
+    }
+  }
+
+  static async updateAuthor (req, res, next) {
+    try{
+      var id = req.params.id;
+      await authors.findByIdAndUpdate(id, {$set: req.body});
+      res.status(200).send(authors, {message: "Autor atualizado com sucesso!"});
+    }
+    catch(err){
+      next(err);
+    }
+  }
+
+  static async deleteAuthor (req, res, next) {
+    try{
+      var id = req.params.id;
+      await authors.findByIdAndDelete(id);
+      res.status(200).send(authors, {message: "Autor removido com sucesso!"});
+    }
+    catch(err){
+      next(err);
+    }
+  }
 }
 
-export default AuthorController
+export default AuthorController;
